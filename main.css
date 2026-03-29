@@ -74,6 +74,31 @@ header p {
   gap: 2rem;
 }
 
+.year-section {
+  grid-column: 1 / -1;
+}
+
+.year-grid {
+  grid-template-columns: repeat(3, 1fr) !important;
+}
+
+.year-card {
+  padding: 1.5rem 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.year-card h3 {
+  font-size: 1.8rem;
+  letter-spacing: 3px;
+}
+
+.year-card.ineligible {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 section {
   background-color: var(--wood-panel);
   color: var(--text-light);
@@ -121,7 +146,104 @@ h2 {
   letter-spacing: 0.05em;
 }
 
-/* --- CARDS (MAPS & CHARACTERS) --- */
+/* --- CARD FLIP --- */
+.map-card {
+  perspective: 800px;
+  background: none;
+  box-shadow: none;
+  border: none;
+  padding: 0;
+}
+
+.map-card:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: transparent;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+}
+
+.map-card.selected .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-front,
+.card-back {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background-color: var(--wood-light);
+  border: 2px solid #1a120b;
+  border-radius: 4px;
+  padding: 0.75rem;
+  text-align: center;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.card-front {
+  position: relative;
+  width: 100%;
+}
+
+.card-back {
+  position: absolute;
+  inset: 0;
+}
+
+.card-front img {
+  width: 100%;
+  aspect-ratio: 1;
+  height: auto;
+  object-fit: cover;
+  border-radius: 2px;
+  border: 1px solid #000;
+  filter: sepia(0.3) contrast(1.1);
+}
+
+.card-back {
+  transform: rotateY(180deg);
+  background-color: #1e1208;
+  border-color: var(--gold-accent);
+  box-shadow: 0 0 15px var(--gold-glow), inset 0 0 10px rgba(0,0,0,0.5);
+  padding: 1rem;
+}
+
+.card-back h3 {
+  color: var(--gold-accent);
+  font-size: 1.1rem;
+  margin-bottom: 0.3rem;
+}
+
+.card-back p {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--text-light);
+  line-height: 1.4;
+}
+
+.card-back small {
+  color: var(--gold-accent);
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  margin-top: 0.4rem;
+}
+
+.map-card.selected {
+  animation: none;
+  border: none;
+  box-shadow: none;
+  background: none;
+}
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(130px, 100%), 1fr));
@@ -171,6 +293,57 @@ h2 {
   border-color: var(--gold-accent);
   box-shadow: 0 0 15px var(--gold-glow), inset 0 0 10px rgba(0,0,0,0.5);
   background-color: #4a3422;
+}
+
+/* --- SPEECH BUBBLE --- */
+.speech-bubble {
+  display: none;
+  position: absolute;
+  top: 4px;
+  right: -8px;
+  background: var(--parchment-bg);
+  color: var(--text-ink);
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 0.78rem;
+  line-height: 1.3;
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px 8px 8px 0;
+  border: 1.5px solid var(--gold-accent);
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.4);
+  max-width: 130px;
+  text-align: left;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 10px;
+  border: 4px solid transparent;
+  border-top-color: var(--gold-accent);
+}
+
+.speech-bubble::before {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 11px;
+  border: 3px solid transparent;
+  border-top-color: var(--parchment-bg);
+  z-index: 1;
+}
+
+.speech-bubble.visible {
+  display: block;
+  animation: bubblePop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes bubblePop {
+  0%   { opacity: 0; transform: scale(0.5) translateY(6px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 /* Character specific styling */
@@ -239,6 +412,35 @@ button:disabled {
   }
 }
 
+/* --- CENTER POPUP --- */
+.center-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  background: var(--wood-panel);
+  color: var(--text-light);
+  border: 2px solid var(--gold-accent);
+  padding: 1.5rem 2rem;
+  border-radius: 4px;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 1.2rem;
+  box-shadow: 0 0 40px var(--gold-glow), 0 8px 24px rgba(0,0,0,0.6);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 200;
+  max-width: min(480px, 90vw);
+  text-align: center;
+  line-height: 1.5;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.center-popup.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
 /* --- TOAST NOTIFICATION --- */
 .toast {
   position: fixed;
@@ -254,9 +456,11 @@ button:disabled {
   font-size: 1.1rem;
   box-shadow: 0 4px 12px rgba(0,0,0,0.5);
   opacity: 0;
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition: opacity 0.4s ease, transform 0.4s ease;
   pointer-events: none;
   z-index: 100;
+  max-width: 90vw;
+  text-align: center;
 }
 
 .toast.show {
@@ -434,4 +638,156 @@ button:not(:disabled):hover {
 
 .card.clicking::before {
   animation: particleBurst 0.4s ease forwards;
+}
+
+/* --- COLLAPSE & LAUNCH SEQUENCE --- */
+.main-content,
+header,
+.lobby-container > .action-area {
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.collapsing .main-content,
+.collapsing header {
+  opacity: 0;
+  transform: translateY(-20px);
+  pointer-events: none;
+}
+
+.collapsing .action-area {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 50;
+  transition: top 0.6s ease, left 0.6s ease, transform 0.6s ease;
+}
+
+/* --- LOADING SCREEN --- */
+.loading-screen {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.loading-screen.active {
+  display: flex;
+}
+
+.loading-wheel {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+.wheel-ring {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 4px solid transparent;
+  border-top-color: var(--gold-accent);
+  border-right-color: var(--gold-accent);
+  animation: spin 1s linear infinite;
+  box-shadow: 0 0 20px var(--gold-glow);
+}
+
+.wheel-rune {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  animation: spin 3s linear infinite reverse;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-msg {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 1.2rem;
+  color: var(--text-ink);
+  text-align: center;
+  max-width: 400px;
+  animation: msgFade 0.5s ease;
+}
+
+@keyframes msgFade {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* --- CONGRATS SCREEN --- */
+.congrats-screen {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  text-align: center;
+  padding: 2rem;
+}
+
+.congrats-screen.active {
+  display: flex;
+}
+
+.congrats-title {
+  font-family: 'Cinzel', serif;
+  font-size: 3rem;
+  color: var(--text-ink);
+  animation: h1Reveal 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards, h1Pulse 4s ease-in-out 1.2s infinite;
+  letter-spacing: 3px;
+}
+
+.congrats-sub {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 1.4rem;
+  color: var(--text-ink);
+  max-width: 500px;
+  line-height: 1.6;
+  opacity: 0;
+  animation: msgFade 0.8s ease 1s forwards;
+}
+
+.congrats-runes {
+  font-size: 2rem;
+  opacity: 0;
+  animation: msgFade 0.8s ease 1.6s forwards;
+  letter-spacing: 1rem;
+}
+
+.congrats-keyword {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--text-ink);
+  max-width: 500px;
+  line-height: 1.6;
+  opacity: 0;
+  animation: msgFade 0.8s ease 2.2s forwards;
+  border: 1px solid var(--gold-accent);
+  padding: 0.75rem 1.25rem;
+  border-radius: 4px;
+  background: rgba(197, 160, 89, 0.1);
+}
+
+.congrats-keyword strong {
+  font-family: 'Cinzel', serif;
+  font-style: normal;
+  font-size: 1.2rem;
+  color: var(--gold-accent);
+  letter-spacing: 2px;
 }

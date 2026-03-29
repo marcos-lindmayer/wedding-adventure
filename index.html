@@ -12,24 +12,67 @@
   <div class="lobby-container">
     <header>
       <h1>Select your quest</h1>
-      <p>The party gathers. Choose thy destination, traveler.</p>
+      <p>The party gathers. Choose thy destination, travelers.</p>
     </header>
 
     <div class="main-content">
+      <section class="year-section">
+        <h2>The Year of the Quest</h2>
+        <p class="companions-hint">Choose thy year wisely</p>
+        <div class="card-grid year-grid">
+          <div class="card year-card" data-year="2026">
+            <h3>2026</h3>
+          </div>
+          <div class="card year-card" data-year="2027">
+            <h3>2027</h3>
+          </div>
+          <div class="card year-card" data-year="2028">
+            <h3>2028</h3>
+          </div>
+        </div>
+      </section>
+
       <section>
         <h2>Realms of Adventure</h2>
         <div class="card-grid" id="map-grid">
           <div class="card map-card" data-map="North">
-            <img src="img/north.png" alt="North">
-            <h3>North</h3>
+            <div class="card-inner">
+              <div class="card-front">
+                <img src="img/north.png" alt="North">
+                <h3>North</h3>
+              </div>
+              <div class="card-back">
+                <h3>North</h3>
+                <p>Snow-capped peaks and ancient forests. A realm of frost and forgotten kings.</p>
+                <small>⚔️ Difficulty: Legendary</small>
+              </div>
+            </div>
           </div>
           <div class="card map-card" data-map="Hike">
-            <img src="img/hike.png" alt="Hike">
-            <h3>Hike</h3>
+            <div class="card-inner">
+              <div class="card-front">
+                <img src="img/hike.png" alt="Hike">
+                <h3>Hike</h3>
+              </div>
+              <div class="card-back">
+                <h3>Hike</h3>
+                <p>Winding trails through enchanted valleys. Where every step is a new discovery.</p>
+                <small>🌿 Difficulty: Moderate</small>
+              </div>
+            </div>
           </div>
           <div class="card map-card" data-map="Beach">
-            <img src="img/beach.png" alt="Beach">
-            <h3>Beach</h3>
+            <div class="card-inner">
+              <div class="card-front">
+                <img src="img/beach.png" alt="Beach">
+                <h3>Beach</h3>
+              </div>
+              <div class="card-back">
+                <h3>Beach</h3>
+                <p>Sun-drenched shores and sea-salted winds. Merfolk have been spotted at dusk.</p>
+                <small>🌊 Difficulty: Relaxed</small>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -39,21 +82,25 @@
         <p class="companions-hint">Select your companions</p>
         <div class="card-grid">
           <div class="card character-card" data-friend="Marcos">
+            <div class="speech-bubble"></div>
             <img src="https://placehold.co/130x130" alt="Marcos">
             <h3>Marcos</h3>
             <small>Squirrel Whisperer</small>
           </div>
           <div class="card character-card" data-friend="Julia">
+            <div class="speech-bubble"></div>
             <img src="https://placehold.co/130x130" alt="Julia">
             <h3>Julia</h3>
             <small>Huntress for the Swifts</small>
           </div>
           <div class="card character-card" data-friend="Pancho">
+            <div class="speech-bubble"></div>
             <img src="https://placehold.co/130x130" alt="Pancho">
             <h3>Pancho</h3>
             <small>Snake Cleric</small>
           </div>
           <div class="card character-card" data-friend="Cam">
+            <div class="speech-bubble"></div>
             <img src="https://placehold.co/130x130" alt="Cam">
             <h3>Cam</h3>
             <small>Husbandry Grandmaster</small>
@@ -66,6 +113,20 @@
       <button id="start-btn">Embark on Quest</button>
     </div>
   </div>
+  <div id="loading-screen" class="loading-screen">
+    <div class="loading-wheel">
+      <div class="wheel-ring"></div>
+      <div class="wheel-rune">⚔️</div>
+    </div>
+    <p id="loading-msg" class="loading-msg"></p>
+  </div>
+  <div id="congrats-screen" class="congrats-screen">
+    <h1 class="congrats-title">The Quest Begins!</h1>
+    <p class="congrats-sub" id="congrats-sub"></p>
+    <div class="congrats-runes">✦ ⚔️ ✦</div>
+    <p class="congrats-keyword" id="congrats-keyword"></p>
+  </div>
+  <div id="center-popup" class="center-popup"></div>
   <canvas id="bg-canvas"></canvas>
   <div id="toast" class="toast" role="alert" aria-live="polite"></div>
   <script src="main.js"></script>
