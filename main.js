@@ -1,4 +1,136 @@
 (() => {
+  // --- CANVAS: SMOKE + PARTICLES ---
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const colors = ['#c5a059', '#d4af37', '#e8dbce', '#8b5e1a', '#f0d060'];
+
+  // Smoke puffs rising from bottom
+  const smokes = Array.from({ length: 18 }, () => newSmoke());
+  function newSmoke() {
+    return {
+      x: Math.random() * window.innerWidth,
+      y: window.innerHeight + 60,
+      r: 40 + Math.random() * 80,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: -(0.3 + Math.random() * 0.5),
+      alpha: 0.08 + Math.random() * 0.1,
+      grow: 0.1 + Math.random() * 0.15,
+    };
+  }
+
+  // Ambient edge emitters — sparks crawling along all 4 edges
+  const edgeParticles = [];
+  function spawnEdgeParticle() {
+    const side = Math.floor(Math.random() * 4); // 0=top,1=right,2=bottom,3=left
+    const w = canvas.width, h = canvas.height;
+    let x, y, vx, vy;
+    if (side === 0) { x = Math.random() * w; y = 0;  vx = (Math.random()-0.5)*1.5; vy = 1+Math.random()*2; }
+    else if (side === 1) { x = w; y = Math.random() * h; vx = -(1+Math.random()*2); vy = (Math.random()-0.5)*1.5; }
+    else if (side === 2) { x = Math.random() * w; y = h; vx = (Math.random()-0.5)*1.5; vy = -(1+Math.random()*2); }
+    else { x = 0; y = Math.random() * h; vx = 1+Math.random()*2; vy = (Math.random()-0.5)*1.5; }
+    edgeParticles.push({
+      x, y, vx, vy,
+      r: 2 + Math.random() * 3,
+      alpha: 1,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      decay: 0.008 + Math.random() * 0.012,
+      trail: [],
+    });
+  }
+
+  // Burst particles on card click
+  const bursts = [];
+  function spawnBurst(x, y) {
+    for (let i = 0; i < 36; i++) {
+      const angle = (Math.PI * 2 * i) / 36 + Math.random() * 0.3;
+      const speed = 3 + Math.random() * 7;
+      bursts.push({
+        x, y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        r: 2 + Math.random() * 4,
+        alpha: 1,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        decay: 0.018 + Math.random() * 0.025,
+      });
+    }
+  }
+
+  let frame = 0;
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    frame++;
+
+    // Spawn edge particles periodically
+    if (frame % 4 === 0) spawnEdgeParticle();
+
+    // Draw smoke
+    smokes.forEach((s, i) => {
+      const grad = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r);
+      grad.addColorStop(0, `rgba(180,150,100,${s.alpha})`);
+      grad.addColorStop(1, `rgba(180,150,100,0)`);
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+      s.x += s.vx; s.y += s.vy; s.r += s.grow; s.alpha -= 0.0004;
+      if (s.alpha <= 0 || s.y < -s.r) smokes[i] = newSmoke();
+    });
+
+    // Draw edge particles with trails
+    for (let i = edgeParticles.length - 1; i >= 0; i--) {
+      const p = edgeParticles[i];
+      p.trail.push({ x: p.x, y: p.y });
+      if (p.trail.length > 10) p.trail.shift();
+      p.trail.forEach((pt, ti) => {
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, p.r * (ti / p.trail.length) * 0.8, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.alpha * (ti / p.trail.length) * 0.5;
+        ctx.fill();
+      });
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = p.alpha;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      p.x += p.vx; p.y += p.vy;
+      p.alpha -= p.decay;
+      if (p.alpha <= 0) edgeParticles.splice(i, 1);
+    }
+
+    // Draw burst particles
+    for (let i = bursts.length - 1; i >= 0; i--) {
+      const p = bursts[i];
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = p.alpha;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      p.x += p.vx; p.y += p.vy;
+      p.vy += 0.15;
+      p.alpha -= p.decay;
+      if (p.alpha <= 0) bursts.splice(i, 1);
+    }
+
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  window.spawnBurst = spawnBurst;
+})();
+
+(() => {
   const state = { selectedMap: null, selectedFriends: new Set() };
 
   const mapCards = document.querySelectorAll('.map-card');
@@ -18,7 +150,6 @@
 
   function updateButton() {
     const allReady = state.selectedMap && state.selectedFriends.size === totalFriends;
-    startBtn.disabled = !allReady;
     if (allReady) {
       startBtn.textContent = `Journey to ${state.selectedMap}`;
     } else if (state.selectedMap) {
@@ -31,13 +162,20 @@
 
   function selectMap(card) {
     mapCards.forEach(c => c.classList.remove('selected'));
-    card.classList.add('selected');
+    card.classList.add('selected', 'clicking');
+    card.addEventListener('animationend', () => card.classList.remove('clicking'), { once: true });
+    const r = card.getBoundingClientRect();
+    spawnBurst(r.left + r.width / 2, r.top + r.height / 2);
     state.selectedMap = card.dataset.map;
     updateButton();
   }
 
   function toggleFriend(card) {
     const name = card.dataset.friend;
+    card.classList.add('clicking');
+    card.addEventListener('animationend', () => card.classList.remove('clicking'), { once: true });
+    const r = card.getBoundingClientRect();
+    spawnBurst(r.left + r.width / 2, r.top + r.height / 2);
     if (state.selectedFriends.has(name)) {
       state.selectedFriends.delete(name);
       card.classList.remove('selected');
@@ -52,7 +190,32 @@
   friendCards.forEach(card => card.addEventListener('click', () => toggleFriend(card)));
 
   startBtn.addEventListener('click', () => {
-    if (!state.selectedMap || state.selectedFriends.size !== totalFriends) return;
+    if (!state.selectedMap && state.selectedFriends.size !== totalFriends) {
+      const missing = friendCards.length - state.selectedFriends.size;
+      showToast(`🗺️ There can't be an adventure without a destination! Also ${missing} companion${missing > 1 ? 's are' : ' is'} still napping!`);
+      return;
+    }
+    if (!state.selectedMap) {
+      const taunts = [
+        `🗺️ There can't be an adventure without a destination! Where art thou going, wanderer?`,
+        `🧭 Thy fellowship stands ready... but ready to go WHERE exactly?`,
+        `📜 The scroll remains blank! Choose a realm before the quest begins!`,
+      ];
+      showToast(taunts[Math.floor(Math.random() * taunts.length)]);
+      return;
+    }
+    if (state.selectedFriends.size !== totalFriends) {
+      const allFriends = [...friendCards].map(c => c.dataset.friend);
+      const missing = allFriends.filter(n => !state.selectedFriends.has(n));
+      const names = missing.join(missing.length > 1 ? ' and ' : '');
+      const taunts = [
+        `⚔️ WE CANNOT LEAVE WITHOUT ${names.toUpperCase()}!! They would never forgive us!`,
+        `🍺 ${names} is still at the tavern! We ride for NO ONE until they join!`,
+        `😤 ${names} didn't pack their bags for NOTHING! Get them on the quest!`,
+      ];
+      showToast(taunts[Math.floor(Math.random() * taunts.length)]);
+      return;
+    }
     showToast(`📜 The pact is sealed! Thy fellowship departs for ${state.selectedMap}! Prepare thy inventory!`);
     document.body.classList.add('flash');
     setTimeout(() => document.body.classList.remove('flash'), 800);

@@ -11,7 +11,7 @@
 
   <div class="lobby-container">
     <header>
-      <h1>Select Your Quest</h1>
+      <h1>Select your quest</h1>
       <p>The party gathers. Choose thy destination, traveler.</p>
     </header>
 
@@ -36,7 +36,7 @@
 
       <section>
         <h2>Thy Fellowship</h2>
-        <p>Select your companions</p>
+        <p class="companions-hint">Select your companions</p>
         <div class="card-grid">
           <div class="card character-card" data-friend="Marcos">
             <img src="https://placehold.co/130x130" alt="Marcos">
@@ -63,9 +63,10 @@
     </div>
 
     <div class="action-area">
-      <button id="start-btn" disabled>Embark on Quest</button>
+      <button id="start-btn">Embark on Quest</button>
     </div>
   </div>
+  <canvas id="bg-canvas"></canvas>
   <div id="toast" class="toast" role="alert" aria-live="polite"></div>
   <script src="main.js"></script>
 </body>
