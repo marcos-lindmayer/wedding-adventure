@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wedding Quest Scroll</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Cormorant+Garamond:wght@500;700&display=swap" rel="stylesheet">
+    <link href="main.css" rel="stylesheet">
+</head>
+<body>
+
+  <div class="lobby-container">
+    <header>
+      <h1>Select Your Quest</h1>
+      <p>The party gathers. Choose thy destination, traveler.</p>
+    </header>
+
+    <div class="main-content">
+      <section>
+        <h2>Realms of Adventure</h2>
+        <div class="card-grid" id="map-grid">
+          <div class="card map-card" data-map="North">
+            <img src="/img/north.png" alt="North">
+            <h3>North</h3>
+          </div>
+          <div class="card map-card" data-map="Hike">
+            <img src="/img/hike.png" alt="Hike">
+            <h3>Hike</h3>
+          </div>
+          <div class="card map-card" data-map="Beach">
+            <img src="/img/beach.png" alt="Beach">
+            <h3>Beach</h3>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Thy Fellowship</h2>
+        <p>Select your companions</p>
+        <div class="card-grid">
+          <div class="card character-card" data-friend="Marcos">
+            <img src="/api/placeholder/130/90" alt="Marcos">
+            <h3>Marcos</h3>
+            <small>Squirrel Whisperer</small>
+          </div>
+          <div class="card character-card" data-friend="Julia">
+            <img src="/api/placeholder/130/90" alt="Julia">
+            <h3>Julia</h3>
+            <small>Huntress for the Swifts</small>
+          </div>
+          <div class="card character-card" data-friend="Pancho">
+            <img src="/api/placeholder/130/90" alt="Pancho">
+            <h3>Pancho</h3>
+            <small>Snake Cleric</small>
+          </div>
+          <div class="card character-card" data-friend="Cam">
+            <img src="/api/placeholder/130/90" alt="Cam">
+            <h3>Cam</h3>
+            <small>Husbandry Grandmaster</small>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="action-area">
+      <button id="start-btn" disabled>Embark on Quest</button>
+    </div>
+  </div>
+  <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+  <script src="main.js"></script>
+</body>
+</html>
