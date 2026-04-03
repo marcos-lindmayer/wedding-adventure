@@ -1,4 +1,16 @@
 (() => {
+  const loader = document.getElementById('page-loader');
+
+  function dismiss() {
+    loader.classList.add('hidden');
+    loader.addEventListener('transitionend', () => loader.remove(), { once: true });
+  }
+
+  window.addEventListener('load', dismiss);
+  setTimeout(dismiss, 5000);
+})();
+
+(() => {
   // --- CANVAS: SMOKE + PARTICLES + CONFETTI ---
   const canvas = document.getElementById('bg-canvas');
   const ctx = canvas.getContext('2d');
