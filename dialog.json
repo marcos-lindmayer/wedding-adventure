@@ -61,13 +61,13 @@
     ]
   },
   "destinations": {
-    "North": {
+    "The North": {
       "keyword": "FROSTPEAK"
     },
-    "Hike": {
+    "The Hikelands": {
       "keyword": "TRAILBLAZE"
     },
-    "Beach": {
+    "The Beach": {
       "keyword": "TIDECALLER"
     }
   },

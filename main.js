@@ -203,7 +203,8 @@ fetch('dialog.json')
           .replace('{names}', fellowship)
           .replace('{destination}', state.selectedMap)
           .replace('{year}', state.selectedYear);
-        const keyword = (dialog.destinations[state.selectedMap] || {}).keyword || 'ADVENTURE';
+        const destKey = Object.keys(dialog.destinations).find(k => k.toLowerCase() === state.selectedMap.toLowerCase());
+        const keyword = destKey ? dialog.destinations[destKey].keyword : 'ADVENTURE';
         document.getElementById('congrats-keyword').innerHTML = dialog.congrats.keyword
           .replace('{keyword}', `<strong>${keyword}</strong>`);
         congratsScreen.classList.add('active');
@@ -310,4 +311,5 @@ fetch('dialog.json')
     runLaunchSequence();
   });
 
-});
+  })
+  .catch(err => console.error('Failed to load dialog.json:', err));
