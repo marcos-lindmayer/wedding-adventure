@@ -124,7 +124,12 @@
   window.spawnConfetti = spawnConfetti;
 })();
 
-(() => {
+fetch('dialog.json')
+  .then(r => r.json())
+  .then(dialog => {
+
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+
   const state = { selectedMap: null, selectedFriends: new Set(), selectedYear: null };
 
   const mapCards = document.querySelectorAll('.map-card');
@@ -132,75 +137,13 @@
   const yearCards = document.querySelectorAll('.year-card');
   const startBtn = document.getElementById('start-btn');
   const toast = document.getElementById('toast');
-
   const loadingScreen = document.getElementById('loading-screen');
   const loadingMsg = document.getElementById('loading-msg');
   const congratsScreen = document.getElementById('congrats-screen');
   const congratsSub = document.getElementById('congrats-sub');
-
-  const loadingMessages = [
-    '⚖️ Making sure all dice are equally balanced…',
-    '🐉 Negotiating with the local dragon for safe passage…',
-    '📜 Transcribing the quest scroll in elvish…',
-    '🧙 Consulting the wizard about weather conditions…',
-    '🍺 Ensuring the tavern at the destination is fully stocked…',
-    '🗡️ Sharpening swords and polishing shields…',
-    '🌿 Asking the forest spirits for their blessing…',
-    '🦉 Waiting for the owl to confirm delivery of invitations…',
-    '⭐ Aligning the stars for optimal quest conditions…',
-    '🐿️ Briefing the squirrel scouts on the route…',
-  ];
-
-  const destKeywords = {
-    'North':  'FROSTPEAK',
-    'Hike':   'TRAILBLAZE',
-    'Beach':  'TIDECALLER',
-  };
-
-  function runLaunchSequence() {
-    const lobby = document.querySelector('.lobby-container');
-    lobby.classList.add('collapsing');
-    setTimeout(() => {
-      lobby.style.display = 'none';
-      loadingScreen.classList.add('active');
-      let i = 0;
-      function showMsg() {
-        loadingMsg.style.animation = 'none';
-        void loadingMsg.offsetWidth;
-        loadingMsg.style.animation = '';
-        loadingMsg.textContent = loadingMessages[i % loadingMessages.length];
-        i++;
-      }
-      showMsg();
-      const msgInterval = setInterval(showMsg, 3500);
-      setTimeout(() => {
-        clearInterval(msgInterval);
-        loadingScreen.classList.remove('active');
-        congratsSub.textContent = `The fellowship of Stefanie, Martin, ${[...state.selectedFriends].join(', ')} shall journey to ${state.selectedMap} in ${state.selectedYear}. May thy adventure be legendary!`;
-        const keyword = destKeywords[state.selectedMap] || 'ADVENTURE';
-        const keywordEl = document.getElementById('congrats-keyword');
-        keywordEl.innerHTML = `To confirm thy allegiance, send a raven to thy adventurers bearing the sacred keyword: <strong>${keyword}</strong>`;
-        congratsScreen.classList.add('active');
-        spawnConfetti();
-        document.body.classList.add('flash');
-        setTimeout(() => document.body.classList.remove('flash'), 800);
-      }, 14000);
-    }, 700);
-  }
-
   const centerPopup = document.getElementById('center-popup');
 
-  function showCenterPopup(msg) {
-    centerPopup.textContent = msg;
-    centerPopup.classList.remove('show');
-    void centerPopup.offsetWidth;
-    centerPopup.classList.add('show');
-    clearTimeout(centerPopup._timer);
-    centerPopup._timer = setTimeout(() => centerPopup.classList.remove('show'), 4000);
-  }
-
   if (!startBtn || !toast) return;
-
   const totalFriends = friendCards.length;
 
   function showToast(msg) {
@@ -209,6 +152,15 @@
     void toast.offsetWidth;
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 4000);
+  }
+
+  function showCenterPopup(msg) {
+    centerPopup.textContent = msg;
+    centerPopup.classList.remove('show');
+    void centerPopup.offsetWidth;
+    centerPopup.classList.add('show');
+    clearTimeout(centerPopup._timer);
+    centerPopup._timer = setTimeout(() => centerPopup.classList.remove('show'), 4000);
   }
 
   function updateButton() {
@@ -227,24 +179,45 @@
     }
   }
 
-  const ineligibleTaunts = {
-    '2026': [
-      `📅 2026?! The dragons haven't finished their migration yet! Absolutely out of the question.`,
-      `🧙 The Oracle has spoken — 2026 is cursed by a rogue moon. We dare not.`,
-      `🐉 2026 is when Gerald the Dragon is using the venue. You don't argue with Gerald.`,
-    ],
-    '2028': [
-      `⏳ 2028?! By then the fellowship will have aged into wizards! We act NOW... well, in 2027.`,
-      `🌋 The prophecy clearly states 2028 brings the Great Cheese Famine. No feasting, no quest.`,
-      `🦉 The owls refuse to deliver invitations that far in advance. It's a union thing.`,
-    ],
-  };
+  function runLaunchSequence() {
+    const lobby = document.querySelector('.lobby-container');
+    lobby.classList.add('collapsing');
+    setTimeout(() => {
+      lobby.style.display = 'none';
+      loadingScreen.classList.add('active');
+      let i = 0;
+      function showMsg() {
+        loadingMsg.style.animation = 'none';
+        void loadingMsg.offsetWidth;
+        loadingMsg.style.animation = '';
+        loadingMsg.textContent = dialog.loading[i % dialog.loading.length];
+        i++;
+      }
+      showMsg();
+      const msgInterval = setInterval(showMsg, 3500);
+      setTimeout(() => {
+        clearInterval(msgInterval);
+        loadingScreen.classList.remove('active');
+        const fellowship = `Stefanie, Martin, ${[...state.selectedFriends].join(', ')}`;
+        congratsSub.textContent = dialog.congrats.fellowship
+          .replace('{names}', fellowship)
+          .replace('{destination}', state.selectedMap)
+          .replace('{year}', state.selectedYear);
+        const keyword = (dialog.destinations[state.selectedMap] || {}).keyword || 'ADVENTURE';
+        document.getElementById('congrats-keyword').innerHTML = dialog.congrats.keyword
+          .replace('{keyword}', `<strong>${keyword}</strong>`);
+        congratsScreen.classList.add('active');
+        spawnConfetti();
+        document.body.classList.add('flash');
+        setTimeout(() => document.body.classList.remove('flash'), 800);
+      }, 14000);
+    }, 700);
+  }
 
   function selectYear(card) {
     const year = card.dataset.year;
     if (year !== '2027') {
-      const taunts = ineligibleTaunts[year];
-      showCenterPopup(taunts[Math.floor(Math.random() * taunts.length)]);
+      showCenterPopup(pick(dialog.yearTaunts[year] || ['Not this year!']));
       card.classList.add('clicking');
       card.addEventListener('animationend', () => card.classList.remove('clicking'), { once: true });
       return;
@@ -255,10 +228,10 @@
     const r = card.getBoundingClientRect();
     spawnBurst(r.left + r.width / 2, r.top + r.height / 2);
     state.selectedYear = year;
+    document.getElementById('scroll-hint').classList.add('visible');
+    window.addEventListener('scroll', () => document.getElementById('scroll-hint').classList.remove('visible'), { once: true });
     updateButton();
   }
-
-  yearCards.forEach(card => card.addEventListener('click', () => selectYear(card)));
 
   function selectMap(card) {
     const isSelected = card.classList.contains('selected');
@@ -274,46 +247,27 @@
     updateButton();
   }
 
-  const friendQuotes = {
-    'Marcos': [
-      'Finally! I packed snacks for three.',
-      'My squirrels are already scouting ahead.',
-      'I was BORN ready. Unlike some people.',
-    ],
-    'Julia': [
-      'The swifts have been notified.',
-      'I already know where all the birds are.',
-      'Don\'t worry, I brought binoculars.',
-    ],
-    'Pancho': [
-      'My snake says this is a good omen.',
-      'I\'ve already blessed the trail.',
-      'The serpents of the land welcome us.',
-    ],
-    'Cam': [
-      'I\'ve assessed the livestock situation.',
-      'All animals en route have been catalogued.',
-      'Husbandry-approved destination. Let\'s go.',
-    ],
-  };
-
   function toggleFriend(card) {
-    const name = card.dataset.friend;
+    const friendName = card.dataset.friend;
     card.classList.add('clicking');
     card.addEventListener('animationend', () => card.classList.remove('clicking'), { once: true });
     const r = card.getBoundingClientRect();
     spawnBurst(r.left + r.width / 2, r.top + r.height / 2);
     const bubble = card.querySelector('.speech-bubble');
-    if (state.selectedFriends.has(name)) {
-      state.selectedFriends.delete(name);
+    const img = card.querySelector('img');
+    const name = friendName.toLowerCase();
+    if (state.selectedFriends.has(friendName)) {
+      state.selectedFriends.delete(friendName);
       card.classList.remove('selected');
+      if (img) img.src = `img/${name}1.png`;
       if (bubble) { clearTimeout(bubble._timer); bubble.classList.remove('visible'); }
     } else {
-      state.selectedFriends.add(name);
+      state.selectedFriends.add(friendName);
       card.classList.add('selected');
-      const quotes = friendQuotes[name] || [];
+      if (img) img.src = `img/${name}2.png`;
+      const quotes = dialog.companionQuotes[friendName] || [];
       if (bubble && quotes.length) {
-        bubble.textContent = quotes[Math.floor(Math.random() * quotes.length)];
+        bubble.textContent = pick(quotes);
         clearTimeout(bubble._timer);
         bubble.classList.remove('visible');
         void bubble.offsetWidth;
@@ -324,44 +278,31 @@
     updateButton();
   }
 
+  yearCards.forEach(card => card.addEventListener('click', () => selectYear(card)));
   mapCards.forEach(card => card.addEventListener('click', () => selectMap(card)));
   friendCards.forEach(card => card.addEventListener('click', () => toggleFriend(card)));
 
   startBtn.addEventListener('click', () => {
+    const e = dialog.startErrors;
     if (!state.selectedMap && state.selectedFriends.size !== totalFriends && !state.selectedYear) {
-      showToast(`🗺️ No destination, no year, and half the fellowship is missing. Did you even try?`);
-      return;
+      showToast(e.nothingSelected); return;
     }
     if (!state.selectedYear) {
-      showToast(`📅 The stars need a year to align! Pick 2027 — the prophecy demands it.`);
-      return;
+      showToast(e.noYear); return;
     }
     if (!state.selectedMap && state.selectedFriends.size !== totalFriends) {
-      const missing = friendCards.length - state.selectedFriends.size;
-      showToast(`🗺️ There can't be an adventure without a destination! Also ${missing} companion${missing > 1 ? 's are' : ' is'} still napping!`);
-      return;
+      const count = totalFriends - state.selectedFriends.size;
+      showToast(e.noDestinationAndMissing.replace('{count}', count).replace('{s}', count > 1 ? 's are' : ' is')); return;
     }
     if (!state.selectedMap) {
-      const taunts = [
-        `🗺️ There can't be an adventure without a destination! Where art thou going, wanderer?`,
-        `🧭 Thy fellowship stands ready... but ready to go WHERE exactly?`,
-        `📜 The scroll remains blank! Choose a realm before the quest begins!`,
-      ];
-      showToast(taunts[Math.floor(Math.random() * taunts.length)]);
-      return;
+      showToast(pick(e.noDestination)); return;
     }
     if (state.selectedFriends.size !== totalFriends) {
-      const allFriends = [...friendCards].map(c => c.dataset.friend);
-      const missing = allFriends.filter(n => !state.selectedFriends.has(n));
+      const missing = [...friendCards].map(c => c.dataset.friend).filter(n => !state.selectedFriends.has(n));
       const names = missing.join(missing.length > 1 ? ' and ' : '');
-      const taunts = [
-        `⚔️ WE CANNOT LEAVE WITHOUT ${names.toUpperCase()}!! They would never forgive us!`,
-        `🍺 ${names} is still at the tavern! We ride for NO ONE until they join!`,
-        `😤 ${names} didn't pack their bags for NOTHING! Get them on the quest!`,
-      ];
-      showToast(taunts[Math.floor(Math.random() * taunts.length)]);
-      return;
+      showToast(pick(e.missingCompanions).replace('{names}', names).replace('{names}', names.toUpperCase())); return;
     }
     runLaunchSequence();
   });
-})();
+
+});

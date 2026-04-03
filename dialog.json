@@ -1,0 +1,79 @@
+{
+  "loading": [
+    "🐉 Negotiating with the local dragon for safe passage…",
+    "📜 Transcribing the quest scroll in elvish…",
+    "🧙 Consulting the wizard about weather conditions…",
+    "🎴 Packing MTG decks with reach",
+    "🍺 Ensuring the tavern at the destination is fully stocked…",
+    "🗡️ Sharpening swords and polishing shields…",
+    "🌿 Asking the forest spirits for their blessing…",
+    "🦉 Waiting for the owl to confirm delivery of invitations…",
+    "⭐ Aligning the stars for optimal quest conditions…",
+    "🐿️ Briefing the squirrel scouts on the route…"
+  ],
+  "yearTaunts": {
+    "2026": [
+      "📅 2026?! The dragons haven't finished their migration yet! Absolutely out of the question.",
+      "🧙 The Oracle has spoken — 2026 is too soon. We dare not.",
+      "🐉 2026 is when Gerald the Dragon is using the venue. You don't argue with Gerald."
+    ],
+    "2028": [
+      "⏳ 2028?! By then the fellowship will have aged into wizards! We act NOW... well, in 2027.",
+      "🌋 The prophecy clearly states 2028 brings the Great Cheese Famine. No feasting, no quest.",
+      "🦉 The owls refuse to deliver invitations that far in advance. It's a union thing."
+    ]
+  },
+  "startErrors": {
+    "nothingSelected": "🗺️ No destination, no year, and half the fellowship is missing. Did you even try?",
+    "noYear": "📅 The stars need a year to align! Pick 2027 — the prophecy demands it.",
+    "noDestination": [
+      "🗺️ There can't be an adventure without a destination! Where art thou going, wanderers?",
+      "🧭 Thy fellowship stands ready... but ready to go WHERE exactly?",
+      "📜 The scroll remains blank! Choose a realm before the quest begins!"
+    ],
+    "missingCompanions": [
+      "⚔️ WE CANNOT LEAVE WITHOUT {names}!! They would never forgive us!",
+      "🍺 {names} is still at the tavern! We ride for NO ONE until they join!",
+      "😤 {names} didn't pack their bags for NOTHING! Get them on the quest!"
+    ],
+    "noDestinationAndMissing": "🗺️ There can't be an adventure without a destination! Also {count} companion{s} still napping!"
+  },
+  "companionQuotes": {
+    "Marcos": [
+      "Uhh, agarro las Magic?",
+      "SABEEEEEEEEEEEEE",
+      "I'll come, but I also take cheese taxes"
+    ],
+    "Julia": [
+      "The swifts have been notified.",
+      "Precis!",
+      "Don't worry, I brought binoculars."
+    ],
+    "Pancho": [
+      "Slithering into action!",
+      "I've already blessed the trail.",
+      "The serpents of the land welcome us."
+    ],
+    "Cam": [
+      "Into the unknown!",
+      "All animals en route have been catalogued.",
+      "Husbandry-approved destination. Let's go."
+    ]
+  },
+  "destinations": {
+    "North": {
+      "keyword": "FROSTPEAK"
+    },
+    "Hike": {
+      "keyword": "TRAILBLAZE"
+    },
+    "Beach": {
+      "keyword": "TIDECALLER"
+    }
+  },
+  "congrats": {
+    "title": "The Quest Begins!",
+    "fellowship": "The fellowship of {names} shall journey to {destination} in {year}. May thy adventure be legendary!",
+    "keyword": "To confirm thy allegiance, send a raven to thy adventurers bearing the sacred keyword: {keyword}"
+  }
+}
