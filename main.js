@@ -267,7 +267,12 @@ fetch('dialog.json')
       if (img) img.src = `img/${name}2.png`;
       const quotes = dialog.companionQuotes[friendName] || [];
       if (bubble && quotes.length) {
-        bubble.textContent = pick(quotes);
+        if (!bubble._remaining || bubble._remaining.length === 0) {
+          bubble._remaining = [...quotes];
+        }
+        const idx = Math.floor(Math.random() * bubble._remaining.length);
+        const quote = bubble._remaining.splice(idx, 1)[0];
+        bubble.textContent = quote;
         clearTimeout(bubble._timer);
         bubble.classList.remove('visible');
         void bubble.offsetWidth;
